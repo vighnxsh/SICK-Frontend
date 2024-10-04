@@ -5,7 +5,8 @@ import BackendApi from '../../constants/api.ts';
 import fetchUserData from '../../constants/fetchUserData.ts';
 import Sidebar from '../../components/ui/sidebar.tsx';
 import SideBarPhone from '../../components/ui/sidebarPhone.tsx';
-import SignUpPopup from './SignUpPopup.tsx';
+import { useAuth } from '../../context/AuthContext';
+
 interface Token {
   address: string;
   name: string;
@@ -48,12 +49,11 @@ const CrateCreator: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [totalAllocation, setTotalAllocation] = useState<number>(0);
   const [error, setError] = useState<string>('');
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
  
 
   useEffect(() => {
     setTokens(tokenData);
-    checkLoginStatus();
+    // checkLoginStatus();
   }, []);
 
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -63,22 +63,22 @@ const CrateCreator: React.FC = () => {
     }
   };
 
-  const checkLoginStatus = async () => {
-    const creatorId = localStorage.getItem('creatorId');
+  // const checkLoginStatus = async () => {
+  //   const creatorId = localStorage.getItem('creatorId');
   
-    if (creatorId) {
-      setIsLoggedIn(true);
-    } else {
-      // Call the reusable function
-      const user = await fetchUserData();
+  //   if (creatorId) {
+  //     setIsLoggedIn(true);
+  //   } else {
+  //     // Call the reusable function
+  //     const user = await fetchUserData();
       
-      // Set creatorId in localStorage if the user is found
-      if (user) {
-        localStorage.setItem('creatorId', user.id);
-        setIsLoggedIn(true); // You can handle setting login here
-      }
-    }
-  };
+  //     // Set creatorId in localStorage if the user is found
+  //     if (user) {
+  //       localStorage.setItem('creatorId', user.id);
+  //       setIsLoggedIn(true); // You can handle setting login here
+  //     }
+  //   }
+  // };
   
 
 
@@ -171,70 +171,12 @@ window.location.href = '/crates/' + result.id;
     ).slice(0, 20); // Limit to 5 suggestions
   }, [tokens, searchTerm]);
 
-  // if (!isLoggedIn) {
-  //   return (
-  //     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
-  //       <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
-  //         Sign Up to Create a Crate
-  //       </h1>
-  //       <form onSubmit={handleSignup}>
-  //         <input
-  //           type="text"
-  //           value={name}
-  //           onChange={(e) => setName(e.target.value)}
-  //           placeholder="Full Name"
-  //           style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
-  //         />
-  //         <input
-  //           type="email"
-  //           value={email}
-  //           onChange={(e) => setEmail(e.target.value)}
-  //           placeholder="Email"
-  //           style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
-  //         />
-  //         <input
-  //           type="text"
-  //           value={username}
-  //           onChange={(e) => setUsername(e.target.value)}
-  //           placeholder="Username"
-  //           style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
-  //         />
-  //         <input
-  //           type="text"
-  //           value={profileImage}
-  //           onChange={(e) => setProfileImage(e.target.value)}
-  //           placeholder="Profile Image URL"
-  //           style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
-  //         />
-  //         <button
-  //           type="submit"
-  //           style={{
-  //             width: '100%',
-  //             padding: '10px',
-  //             backgroundColor: '#4CAF50',
-  //             color: 'white',
-  //             border: 'none',
-  //             borderRadius: '4px',
-  //             cursor: 'pointer',
-  //             marginBottom: '10px'
-  //           }}
-  //         >
-  //           Sign Up
-  //         </button>
-  //       </form>
-  //       {error && (
-  //         <div style={{ backgroundColor: '#ffcccb', color: '#d8000c', padding: '10px', marginTop: '20px', borderRadius: '4px' }}>
-  //           {error}
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // }
+
+  const { handleLogout } = useAuth();
 
   return (
     
     <div className="max-w-6xl mx-auto p-8 bg-gradient-to-b from-gray-900 via-lime-950 to-gray-900 text-white rounded-3xl shadow-2xl">
-      {!isLoggedIn && <SignUpPopup />}
       
       <h1 className="text-6xl font-semibold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-lime-500 via-green-300 to-emerald-600 animate-gradient-y font-mono ">Forge Your Crate</h1>
       
@@ -333,6 +275,12 @@ window.location.href = '/crates/' + result.id;
             </span>
           ) : 'Create '}
         </button>
+        <button 
+        onClick={handleLogout}
+        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+      >
+        Logout
+      </button>
       </div>
       <Sidebar/>
       <SideBarPhone/>

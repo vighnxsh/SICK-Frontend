@@ -8,21 +8,34 @@ import CrateDetailPage from './pages/crates';
 import ExploreCrate from './pages/explorecrate/ExploreCrate';
 import Graphtest from './pages/graphtest';
 import SickAi from './pages/sickai';
+import { OktoProvider, BuildType } from 'okto-sdk-react';
+import { AuthProvider } from './context/AuthContext';
+import LoginPage from './components/LoginPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
+
+const OKTO_CLIENT_API_KEY = "941e4d3d-eca8-4c50-8641-073ba7dcd5e7";
+
 
 const App: React.FC = () => {
   return (
     <Router>
+            <AuthProvider>
+
+      <OktoProvider apiKey={OKTO_CLIENT_API_KEY} buildType={BuildType.SANDBOX}>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<Landing />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/explorecrate" element={<ExploreCrate />} />
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/explorecrate" element={<ProtectedRoute><ExploreCrate /></ProtectedRoute >} />
         <Route path="/whitepaper" element={<WhitepaperSICK />} />
-        <Route path="/cratecreator" element={<CrateCreator />} />
-        <Route path="/crates/:id" element={<CrateDetailPage />} />
-        <Route path="/graphtest/:id" element={<Graphtest />} />   
+        <Route path="/cratecreator" element={<ProtectedRoute><CrateCreator /></ProtectedRoute>} />
+        <Route path="/crates/:id" element={<ProtectedRoute><CrateDetailPage /></ProtectedRoute>} />
+        <Route path="/graphtest/:id" element={<ProtectedRoute><Graphtest /></ProtectedRoute>} />   
         <Route path="/sai" element={<SickAi />} />
         </Routes>
+      </OktoProvider>
+      </AuthProvider> 
     </Router>
   );
 }

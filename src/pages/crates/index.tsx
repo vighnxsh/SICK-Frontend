@@ -1,4 +1,3 @@
-"use client"
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
@@ -73,6 +72,8 @@ const CrateDetailPage: React.FC = () => {
 
   const publicKeyFromLocalStorage = localStorage.getItem('tipLink_pk_connected');
   const userPublicKey = publicKeyFromLocalStorage ? new PublicKey(publicKeyFromLocalStorage) : null;
+
+ 
 
   useEffect(() => {
     const fetchCrateData = async () => {
@@ -173,6 +174,7 @@ const CrateDetailPage: React.FC = () => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-b from-[#0A1019] to-[#02050A] text-white">
       <Sidebar />
+      
       <div className="flex-1 p-4 md:p-8 md:pl-24">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-lime-400 mb-4 md:mb-0">{crateData.name}</h1>

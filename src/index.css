@@ -47,3 +47,24 @@
   .innerscroll::-webkit-scrollbar-thumb:hover {
     background: #718096;
   }
+
+
+  .custom-google-button {
+    background-color: #4285f4; /* Google blue */
+    color: white;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-google-button:hover {
+    background-color: #357ae8; /* Darker blue on hover */
+  }
+  
+  .custom-google-button:disabled {
+    background-color: #ccc; /* Disabled state */
+    cursor: not-allowed;
+  }
+  
