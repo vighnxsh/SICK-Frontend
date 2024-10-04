@@ -2,9 +2,20 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/ui/sidebar.tsx';
 import SideBarPhone from '../../components/ui/sidebarPhone.tsx';
 import CrateCard from '../../components/CrateCard';
-
+import Loader from '../../components/Loading';
+import useCrateCharts from './useCrateCharts.tsx';
+interface Token {
+  icon: string;
+  percentage: number;
+  coingeckoId: string;
+  id: string;
+  symbol: string;
+  name: string;
+  quantity: number;
+}
 
 interface Crate {
+  [x: string]: any;
   id: string;
   name: string;
   image: string;
@@ -14,22 +25,28 @@ interface Crate {
   creatorId: string;
   upvotes: number;
   downvotes: number;
-  tokens: { icon: string; percentage: number }[];
+  tokens: Token[];
 }
 
 const ExploreCrate: React.FC = () => {
   const [crates, setCrates] = useState<Crate[]>([]);
   const [sortOption, setSortOption] = useState<string>('createdAt');
-
-  useEffect(() => {
-   
+  const [loading, setLoading] = useState<boolean>(true);
+  const {  chartsData } = useCrateCharts(crates);
+   useEffect(() => {
     const fetchCrates = async () => {
       try {
         const response = await fetch('https://sickb.vercel.app/api/crates');
         const data = await response.json();
-        setCrates(data);
+        // Sort by 'createdAt' by default
+        const sortedData = data.sort((a: Crate, b: Crate) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setCrates(sortedData);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching crates:', error);
+        setLoading(false);
       }
     };
 
@@ -48,13 +65,15 @@ const ExploreCrate: React.FC = () => {
   };
 
 
-  
+
 
   return (
-    <div className="flex flex-col md:flex-row bg-[#0D1117] text-white min-h-screen">
+    <div className="flex flex-col md:flex-row bg-gradient-to-b from-[#0A1019] to-[#02050A] text-white min-h-screen">
       <Sidebar  />
       <div className="flex-1 p-4 md:p-8 md:ml-20 mb-20 md:mb-0">
-        <h1 className="text-4xl md:text-6xl mb-6 md:mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#B6FF1B] to-[#1c9b00] font-sans">explore<span className="text-lime-500">_</span>Crates</h1>
+        
+        
+        <h1 className="text-4xl md:text-6xl mb-6 md:mb-12 text-trans</div>parent bg-clip-text bg-gradient-to-r from-[#B6FF1B] to-[#1c9b00] font-sans">explore<span className="text-lime-500">_</span>Crates</h1>
         <div className="mb-6 md:mb-8 flex flex-wrap items-center gap-2 md:gap-4">
           <button
             onClick={() => handleSort('createdAt')}
@@ -87,23 +106,32 @@ const ExploreCrate: React.FC = () => {
             Most Downvotes
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-        {crates.map((crate) => (
-         <a href={`/crates/${crate.id}`} className="transform transition-all duration-300 hover:scale-105">   
-           <CrateCard
-              key={crate.id}
-              title={crate.name}
-              subtitle={`Created: ${new Date(crate.createdAt).toLocaleDateString()}`}
-              percentage={0} // Placeholder
-              tokens={[]} // Placeholder
-              upvotes={crate.upvotes}
-              downvotes={crate.downvotes}
-            />
-          </a>
-          ))}
-        </div>
+        {loading ? (
+          <Loader />
+        ) : (
+          <>
+ {console.log(crates)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+            {crates.map((crate) => (
+             
+              <a href={`/crates/${crate.id}`} className="transform transition-all duration-300 hover:scale-105" key={crate.id}>
+                <CrateCard
+                  chartData={chartsData[crate.id]}
+                  title={crate.name}
+                  creator={crate.creator.name}
+                  subtitle={`Created: ${new Date(crate.createdAt).toLocaleDateString()}`}
+                  percentage={0} // Placeholder
+                  tokens={crate.tokens}
+                  upvotes={crate.upvotes}
+                  downvotes={crate.downvotes}
+                />
+              </a>
+            ))}
+          </div>
+          </>
+        )}
       </div>
-      <SideBarPhone  />
+      <SideBarPhone />
     </div>
   );
 };

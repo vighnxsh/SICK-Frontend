@@ -33,7 +33,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId = {GOOGLE_CLIENT_ID}>
     <OktoProvider apiKey={OKTO_CLIENT_API} buildType={BuildType.SANDBOX}>
-    <WalletProvider wallets={wallets} autoConnect>
+    <WalletProvider wallets={wallets} >
       <TipLinkWalletAutoConnectV2 isReady query={new URLSearchParams(window.location.search)}>
       
         <WalletModalProvider>

@@ -1,36 +1,56 @@
 //@ts-nocheck
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useOkto } from 'okto-sdk-react';
-import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from '../context/AuthContext';
 
-const LoginPage: React.FC = () => {
-  const navigate = useNavigate(); 
-  const location = useLocation();
-  const { authenticate } = useOkto();
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useOkto } from "okto-sdk-react";
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+function LoginPage() {
+      
   const { isLoggedIn, setIsLoggedIn, setAuthToken } = useAuth();
-
   const from = location.state?.from?.pathname || '/home';
 
-  const handleGoogleLogin = async (credentialResponse: any) => {
-    console.log('Google login response:', credentialResponse);
+  console.log("LoginPage component rendered");
+  const navigate = useNavigate();
+  const { authenticate } = useOkto();
+  // const [authToken, setAuthToken] = useState();
+  const BASE_URL = "https://sandbox-api.okto.tech";
+  const OKTO_CLIENT_API = "";
+ 
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '20px',
+    maxWidth: '800px',
+    margin: '0 auto',
+  };
+ 
+   const apiService = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+      "x-api-key": OKTO_CLIENT_API,
+      "Content-Type": "application/json",
+    },
+  });
+ 
+  const handleGoogleLogin = async (credentialResponse) => {
+    console.log("Google login response:", credentialResponse);
     const idToken = credentialResponse.credential;
-    
-    authenticate(idToken, async (authResponse: any, error: any) => {
+    console.log("google idtoken: ", idToken);
+    authenticate(idToken, async (authResponse, error) => {
       if (authResponse) {
-        console.log('Authentication check:', authResponse);
-        setAuthToken(authResponse.auth_token);
-        setIsLoggedIn(true);
-        navigate(from, { replace: true });
+        console.log("auth token received", authToken);
+        navigate("/home");
       }
       if (error) {
-        console.error('Authentication error:', error);
-        setIsLoggedIn(false);
+        console.error("Authentication error:", error);
       }
     });
   };
-
+ 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-lime-950 to-gray-900">
       <div className="p-8 bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-lime-500/30">
@@ -58,7 +78,8 @@ const LoginPage: React.FC = () => {
         )}
       </div>
     </div>
-  );
-};
 
-export default LoginPage
+  );
+}
+export default LoginPage;
+ 
