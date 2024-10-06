@@ -27,37 +27,24 @@ const wallets = [
   })
 ]
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, (error) => {
+      console.log('ServiceWorker registration failed: ', error);
+    });
+  });
+}
 
+createRoot(document.getElementById('root')!).render(
 
-const root = createRoot(document.getElementById('root')!)
+    <WalletProvider wallets={wallets} autoConnect>
+      <TipLinkWalletAutoConnectV2 isReady query={new URLSearchParams(window.location.search)}>
+        <WalletModalProvider>
+          <App/>
+        </WalletModalProvider>
+      </TipLinkWalletAutoConnectV2>
+    </WalletProvider>
 
-root.render(
-  <StrictMode>
-     <OktoProvider 
-        apiKey={OKTO_CLIENT_API} 
-        buildType={BuildType.SANDBOX}
-      >
-    {/* Authentication Providers */}
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-     
-        <AuthProvider>
-          {/* Wallet Providers */}
-          <WalletProvider 
-            wallets={wallets} 
-            autoConnect={true}
-          >
-            <TipLinkWalletAutoConnectV2 
-              isReady 
-              query={new URLSearchParams(window.location.search)}
-            >
-              <WalletModalProvider>
-                <App />
-              </WalletModalProvider>
-            </TipLinkWalletAutoConnectV2>
-          </WalletProvider>
-        </AuthProvider>
-   
-    </GoogleOAuthProvider>
-    </OktoProvider>
-  </StrictMode>
 )
