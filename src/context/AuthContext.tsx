@@ -1,69 +1,35 @@
-// contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useOkto } from 'okto-sdk-react';
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (value: boolean) => void;
-  authToken: string | null;
-  setAuthToken: (token: string | null) => void;
-  handleLogout: () => void;
-  walletConnected: boolean;
-}
+type User = {
+  id: string;
+  // Add other user properties as needed
+};
 
-const AuthContext = createContext<AuthContextType | null>(null);
+type AuthContextType = {
+  user: User | null;
+  setUser: (user: User | null) => void;
+  isAuthenticated: boolean;
+};
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navigate = useNavigate();
-  const { connected, disconnect } = useWallet();
-  
-  const [authToken, setAuthToken] = useState<string | null>(() => 
-    localStorage.getItem('authToken')
-  );
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => 
-    localStorage.getItem('isLoggedIn') === 'true'
-  );
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  setUser: () => {},
+  isAuthenticated: false,
+});
 
-  useEffect(() => {
-    if (authToken) {
-      localStorage.setItem('authToken', authToken);
-      localStorage.setItem('isLoggedIn', 'true');
-      setIsLoggedIn(true);
-    } else {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('isLoggedIn');
-      setIsLoggedIn(false);
-    }
-  }, [authToken]);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  //@ts-ignore
+  const { isLoggedIn } = useOkto();
 
-  const handleLogout = async () => {
-    setAuthToken(null);
-    setIsLoggedIn(false);
-    if (connected) {
-      await disconnect();
-    }
-    navigate('/login');
-  };
+  const isAuthenticated = Boolean(user && isLoggedIn);
 
   return (
-    <AuthContext.Provider value={{ 
-      isLoggedIn,
-      setIsLoggedIn,
-      authToken, 
-      setAuthToken, 
-      handleLogout,
-      walletConnected: connected
-    }}>
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

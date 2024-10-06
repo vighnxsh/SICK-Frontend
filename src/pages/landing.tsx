@@ -3,12 +3,14 @@ import { WalletMultiButton } from "@tiplink/wallet-adapter-react-ui";
 import { FaXTwitter } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState , useEffect } from "react";
-import { useWallet } from "@solana/wallet-adapter-react"; // Import useWallet hook
+import { useWallet } from "@solana/wallet-adapter-react";
 import  fetchUserData from '../constants/fetchUserData.ts';
+import OktoAuthButton from "../components/OktoAuthButton.tsx";
 
 
 export default function Landing() {
-  const { publicKey, connected } = useWallet(); // Get the wallet address and connection status
+
+  const { publicKey, connected } = useWallet();
 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const getRandomPosition = () => {
@@ -18,32 +20,33 @@ export default function Landing() {
   };
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const storedWalletAddress = localStorage.getItem("walletAddress");
-      
-      if (storedWalletAddress) {
-        // Wallet address is already stored, proceed to explore crate
-        window.location.href = "/explorecrate";
-        return;
-      }
-
-      if (connected && publicKey) {
-        // Store the wallet address in localStorage
-        localStorage.setItem("walletAddress", publicKey.toString());
-        
-        // Fetch user data
-        const user = await fetchUserData();
-        if (user) {
-          localStorage.setItem('creatorId', user.id);
-          window.location.href = "/explorecrate";
-        }else{
-        window.location.href = "/explorecrate";
-        }
-      }
-    };
-
     checkLoginStatus();
   }, [connected, publicKey]);
+
+  const checkLoginStatus = async () => {
+    const storedWalletAddress = localStorage.getItem("walletAddress");
+    
+    if (storedWalletAddress) {
+      await fetchUserData();
+      // Wallet address is already stored, proceed to explore crate
+      window.location.href = "/explorecrate";
+    }
+
+    if (connected && publicKey) {
+      // Store the wallet address in localStorage
+      localStorage.setItem("walletAddress", publicKey.toString());
+   
+    }
+    const storedWalletAddress2 = localStorage.getItem("walletAddress");
+
+    if(storedWalletAddress2){
+ 
+await fetchUserData();
+window.location.href = "/explorecrate";
+  };
+}
+
+ 
   return (
     <>
       <img
@@ -82,6 +85,8 @@ export default function Landing() {
               SICK
             </div>
 
+            <OktoAuthButton />
+           
             <WalletMultiButton
               style={{
                 background: "white",

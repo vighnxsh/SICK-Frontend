@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import CrateCard from "../CrateCard";
+import { useOkto } from 'okto-sdk-react';
+import { OktoContextType } from 'okto-sdk-react';
 
 // Define interfaces for our data structures
 interface User {
@@ -23,6 +25,11 @@ interface Crate {
 const userId = "cm1jjm4qb0002x10ayoqe8yuj"; // should've been fetched from redux
 
 export default function CryptoDashboard() {
+
+
+  const { showWidgetModal } = useOkto() as OktoContextType;
+
+
   const [bookmarkedCrates, setBookmarkedCrates] = useState<Crate[]>([]);
 
   // Get user data directly from localStorage (will only run once when the component is initialized)
@@ -55,6 +62,14 @@ export default function CryptoDashboard() {
           <h1 className="text-xl sm:text-2xl bg-gradient-to-b from-[#FFFFFF] to-[#494949] bg-clip-text text-transparent mb-4 sm:mb-0">
             hello_{truncatedName} (&gt;_•)
           </h1>
+          <button
+          onClick={() => {
+              showWidgetModal();
+          }}
+          style={{ padding: '10px 20px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}
+      >
+          Open Okto Profile
+      </button>
           <div className="flex items-center">
             <div className="w-8 h-8 ml-4 bg-gray-300 rounded-full">
               <img

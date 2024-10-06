@@ -64,8 +64,10 @@ function LoginPage() {
                 console.log('Login Failed', error);
                 setIsLoggedIn(false);
               }}
+              text="continue_with"
+              type="standard"
               useOneTap
-              theme="filled_black"
+              theme="filled_blue"
               shape="pill"
               size="large"
               width="300px"
